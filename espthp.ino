@@ -10,10 +10,10 @@ PubSubClient client(WiFiClient);
 
 const String chipId = String(ESP.getChipId());
 const String baseTopic = "raw/" + chipId + "/";
-const char* tempTopic = (baseTopic + "temperature").c_str();
-const char* humiTopic = (baseTopic + "humidity").c_str();
-const char* presTopic = (baseTopic + "pressure").c_str();;
-const char* willTopic = (baseTopic + "status").c_str();
+const String tempTopic = baseTopic + "temperature";
+const String humiTopic = baseTopic + "humidity";
+const String presTopic = baseTopic + "pressure";
+const String willTopic = baseTopic + "status";
 
 
 void setup() {
@@ -45,9 +45,9 @@ void loop() {
   yield();
   if (!client.connected()) {
     Serial.println("Attempting MQTT connection...");
-    if (client.connect(chipId.c_str(), willTopic, 1, true, STATUS_DISCONNECTED)) {
+    if (client.connect(chipId.c_str(), willTopic.c_str(), 1, true, STATUS_DISCONNECTED)) {
       Serial.println("MQTT client connected.");
-      client.publish(willTopic, STATUS_ONLINE, true);
+      client.publish(willTopic.c_str(), STATUS_ONLINE, true);
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
@@ -68,8 +68,8 @@ void bmeReadSend() {
   int t = 20; 
   int h = 50;
   int p = 1014;  
-  client.publish(tempTopic, String(t).c_str());
-  client.publish(humiTopic, String(h).c_str());
-  client.publish(presTopic, String(p).c_str());
+  client.publish(tempTopic.c_str(), String(t).c_str());
+  client.publish(humiTopic.c_str(), String(h).c_str());
+  client.publish(presTopic.c_str(), String(p).c_str());
 }
 
