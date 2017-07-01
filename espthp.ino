@@ -10,10 +10,10 @@ PubSubClient client(WiFiClient);
 
 const String chipId = String(ESP.getChipId());
 const String baseTopic = "raw/" + chipId + "/";
-const char* tempTopic = String(baseTopic + "temperature").c_str();
-const char* humiTopic = String(baseTopic + "humidity").c_str();
-const char* presTopic = String(baseTopic + "pressure").c_str();;
-const char* willTopic = String(baseTopic + "status").c_str();
+const char* tempTopic = (baseTopic + "temperature").c_str();
+const char* humiTopic = (baseTopic + "humidity").c_str();
+const char* presTopic = (baseTopic + "pressure").c_str();;
+const char* willTopic = (baseTopic + "status").c_str();
 
 
 void setup() {
