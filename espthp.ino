@@ -1,9 +1,8 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BME280.h>
 #include "config.h"
-
-WiFiClient WiFiClient;
-PubSubClient client(WiFiClient);
 
 #define STATUS_DISCONNECTED "disconnected"
 #define STATUS_ONLINE "online"
@@ -15,11 +14,21 @@ const String humiTopic = baseTopic + "humidity";
 const String presTopic = baseTopic + "pressure";
 const String willTopic = baseTopic + "status";
 
+WiFiClient WiFiClient;
+PubSubClient client(WiFiClient);
+Adafruit_BME280 bme; // I2C
 
 void setup() {
   
   Serial.begin(115200);
   delay(10);
+
+  Wire.begin(0, 2);
+  Wire.setClock(100000);
+  if (!bme.begin()) {
+    Serial.println("Could not find a valid BME280 sensor, check wiring!");
+    while (1);
+  }
 
   Serial.println();
   Serial.print("Connecting to ");
@@ -63,13 +72,25 @@ void loop() {
   }
 }
 
-void bmeReadSend() {
-  Serial.println("Sending values");    
-  int t = 20; 
-  int h = 50;
-  int p = 1014;  
-  client.publish(tempTopic.c_str(), String(t).c_str());
-  client.publish(humiTopic.c_str(), String(h).c_str());
-  client.publish(presTopic.c_str(), String(p).c_str());
+void bmeReadSend() {  
+  char temperature[6];
+  char humidity[6];  
+  char pressure[7];
+  
+  float t = bme.readTemperature();  
+  float h = bme.readHumidity();
+  float p = bme.readPressure()/100.0F;
+  
+  dtostrf(t, 5, 1, temperature);
+  dtostrf(h, 5, 1, humidity);  
+  dtostrf(p, 5, 1, pressure);
+
+  Serial.print("t,h,p: ");
+  Serial.print(temperature); Serial.print(", ");
+  Serial.print(humidity);    Serial.print(", ");
+  Serial.print(pressure);    Serial.println();
+  client.publish(tempTopic.c_str(), temperature);
+  client.publish(humiTopic.c_str(), humidity);
+  client.publish(presTopic.c_str(), pressure);
 }
 
