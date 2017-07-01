@@ -25,7 +25,7 @@ void setup() {
 
   Wire.begin(0, 2);
   Wire.setClock(100000);
-  if (!bme.begin()) {
+  if (!bme.begin(0x76)) {
     Serial.println("Could not find a valid BME280 sensor, check wiring!");
     while (1);
   }
