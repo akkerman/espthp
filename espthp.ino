@@ -36,7 +36,9 @@ void setup() {
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.print("IP address: ");
-  Serial.println(WiFi.localIP()); 
+  Serial.println(WiFi.localIP());
+
+  client.setServer(MQTT_IP, MQTT_PORT);
 }
 
 void loop() {
