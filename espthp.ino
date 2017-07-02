@@ -70,13 +70,16 @@ void loop() {
   }
 
   if (client.connected()) {
+    count = (count+1) % mod;  
     if (count == 0) {
       bmeReadSend();        
-    }
+    }    
     
     client.loop();
+  } else {
+    count = 0;
   }
-  count = (count+1) % mod;
+  
   delay(loopDelay * 1000);
 }
 
