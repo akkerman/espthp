@@ -72,11 +72,10 @@ void loop() {
   }
 
   if (client.connected()) {
-    count = (count+1) % mod;  
     if (count == 0) {
-      bmeReadSend();        
-    }    
-    
+      bmeReadSend();
+    }
+    count = (count+1) % mod;
     client.loop();
   } else {
     count = 0;
@@ -106,4 +105,3 @@ void bmeReadSend() {
   client.publish(humiTopic.c_str(), humidity);
   client.publish(presTopic.c_str(), pressure);
 }
-
