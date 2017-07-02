@@ -65,7 +65,9 @@ void loop() {
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
-      Serial.println(" will try again in 5 seconds");            
+      Serial.print(" will try again in ");
+      Serial.print(loopDelay);
+      Serial.println(" seconds");
     }
   }
 
