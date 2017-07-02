@@ -50,6 +50,11 @@ void setup() {
   client.setServer(MQTT_IP, MQTT_PORT);
 }
 
+
+int loopDelay = 10; // seconds
+int sendDelay = 90; // seconds
+int count = 0;
+int mod = sendDelay / loopDelay;
 void loop() {
   yield();
   if (!client.connected()) {
@@ -60,16 +65,19 @@ void loop() {
     } else {
       Serial.print("failed, rc=");
       Serial.print(client.state());
-      Serial.println(" will try again in 5 seconds");      
-      delay(5000);    
+      Serial.println(" will try again in 5 seconds");            
     }
   }
 
   if (client.connected()) {
-    bmeReadSend();
+    if (count == 0) {
+      bmeReadSend();        
+    }
+    
     client.loop();
-    delay(10000);
   }
+  count = (count+1) % mod;
+  delay(loopDelay * 1000);
 }
 
 void bmeReadSend() {  
