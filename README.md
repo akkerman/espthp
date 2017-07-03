@@ -1,7 +1,7 @@
 # espthp
 
 A sketch for ESP8266 ESP-01
-It enables the ESP8266 to connect to WiFi and send data from BME280 to an MQTT server.
+It enables the ESP8266 to connect to WiFi and send data from BME/BMP280 to an MQTT server.
 
 ## connections
 
@@ -39,3 +39,8 @@ The status is retained, set to online when ESP connects and
 set by mqtt broker to 'disconnected' when
 no response from ESP was had for some period of time.
 
+## Picture
+
+Test setup after uploading (without serial connection).
+
+![ESP-01 with BME280](testsetup.jpg)
