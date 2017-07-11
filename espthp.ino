@@ -7,12 +7,18 @@
 #define STATUS_DISCONNECTED "disconnected"
 #define STATUS_ONLINE "online"
 
+ADC_MODE(ADC_VCC);
+
+unsigned long previousMillis = 0;
+const long interval = 90 * 1000;
+
 const String chipId = String(ESP.getChipId());
 const String baseTopic = "raw/" + chipId + "/";
 const String tempTopic = baseTopic + "temperature";
 const String humiTopic = baseTopic + "humidity";
 const String presTopic = baseTopic + "pressure";
 const String willTopic = baseTopic + "status";
+const String vccTopic  = baseTopic + "vcc";
 
 WiFiClient WiFiClient;
 PubSubClient client(WiFiClient);
@@ -41,8 +47,7 @@ void setup() {
     delay(500);
     Serial.print(".");
   }
-
-  
+ 
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.print("IP address: ");
@@ -51,11 +56,6 @@ void setup() {
   client.setServer(MQTT_IP, MQTT_PORT);
 }
 
-
-int loopDelay = 10; // seconds
-int sendDelay = 90; // seconds
-int count = 0;
-int mod = sendDelay / loopDelay;
 void loop() {
   yield();
   if (!client.connected()) {
@@ -65,24 +65,22 @@ void loop() {
       client.publish(willTopic.c_str(), STATUS_ONLINE, true);
     } else {
       Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.print(" will try again in ");
-      Serial.print(loopDelay);
-      Serial.println(" seconds");
+      Serial.println(client.state());
     }
   }
 
+  unsigned long currentMillis = millis();
+
   if (client.connected()) {
-    if (count == 0) {
+    if (previousMillis ==0 || currentMillis - previousMillis >= interval) {
+      previousMillis = currentMillis;
       bmeReadSend();
+      vccReadSend();
     }
-    count = (count+1) % mod;
     client.loop();
   } else {
-    count = 0;
+    previousMillis = 0;
   }
-  
-  delay(loopDelay * 1000);
 }
 
 void bmeReadSend() {  
@@ -105,4 +103,11 @@ void bmeReadSend() {
   client.publish(tempTopic.c_str(), temperature);
   client.publish(humiTopic.c_str(), humidity);
   client.publish(presTopic.c_str(), pressure);
+}
+
+void vccReadSend() {
+    float v  = ESP.getVcc() / 1000.0;
+    char vcc[10]; 
+    dtostrf(v, 5, 1, vcc);
+    client.publish(vccTopic.c_str(), vcc);
 }
