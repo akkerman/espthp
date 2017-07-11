@@ -7,12 +7,16 @@
 #define STATUS_DISCONNECTED "disconnected"
 #define STATUS_ONLINE "online"
 
+ADC_MODE(ADC_VCC);
+
+
 const String chipId = String(ESP.getChipId());
 const String baseTopic = "raw/" + chipId + "/";
 const String tempTopic = baseTopic + "temperature";
 const String humiTopic = baseTopic + "humidity";
 const String presTopic = baseTopic + "pressure";
 const String willTopic = baseTopic + "status";
+const String vccTopic  = baseTopic + "vcc";
 
 WiFiClient WiFiClient;
 PubSubClient client(WiFiClient);
@@ -75,13 +79,17 @@ void loop() {
   if (client.connected()) {
     if (count == 0) {
       bmeReadSend();
+      vccReadSend();
     }
     count = (count+1) % mod;
+
+
     client.loop();
   } else {
     count = 0;
   }
-  
+
+
   delay(loopDelay * 1000);
 }
 
@@ -106,3 +114,11 @@ void bmeReadSend() {
   client.publish(humiTopic.c_str(), humidity);
   client.publish(presTopic.c_str(), pressure);
 }
+
+void vccReadSend() {
+    float v  = ESP.getVcc() / 1000.0;
+    char vcc[10]; 
+    dtostrf(v, 5, 1, vcc);
+    client.publish(vccTopic.c_str(), vcc);
+}
+
