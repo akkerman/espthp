@@ -1,15 +1,16 @@
 # espthp
 
 A sketch for ESP8266 ESP-01
-It enables the ESP8266 to connect to WiFi and send data from BME/BMP280 to an MQTT server.
+It enables the ESP8266 to connect to WiFi
+and send data from BME/BMP280 to an MQTT server.
 
 ## connections
 
-Reset pin is high (with 10-12k resistor) and pulled low for reset.  
+Reset pin is high (with 10-12k resistor) and pulled low for reset.
 ESP.GPIO0 is pulled low for programming.
 
-After uploading the sketch:  
-ESP.GPIO0 is connected to BME280.SDA  
+After uploading the sketch:
+ESP.GPIO0 is connected to BME280.SDA
 ESP.GPIO2 is connected to BME280.SCL
 
 ## pre-upload
@@ -32,6 +33,7 @@ raw/chipId/status
 raw/chipId/temperature
 raw/chipId/humidity
 raw/chipId/pressure
+raw/chipId/vcc
 ```
 
 All data is sent to a `raw` tree using the chipId of ESP.
