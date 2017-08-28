@@ -10,7 +10,7 @@
 ADC_MODE(ADC_VCC);
 
 unsigned long previousMillis = 0;
-const long interval = 90 * 1000;
+const long interval = 10 * 60 * 1000;
 
 const String chipId = String(ESP.getChipId());
 const String baseTopic = "raw/" + chipId + "/";
@@ -19,6 +19,9 @@ const String humiTopic = baseTopic + "humidity";
 const String presTopic = baseTopic + "pressure";
 const String willTopic = baseTopic + "status";
 const String vccTopic  = baseTopic + "vcc";
+const String ipTopic   = baseTopic + "ip";
+
+IPAddress ip;
 
 WiFiClient WiFiClient;
 PubSubClient client(WiFiClient);
@@ -51,7 +54,8 @@ void setup() {
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  ip = WiFi.localIP();
+  Serial.println(ip);
 
   client.setServer(MQTT_IP, MQTT_PORT);
 }
@@ -63,6 +67,7 @@ void loop() {
     if (client.connect(chipId.c_str(), willTopic.c_str(), 1, true, STATUS_DISCONNECTED)) {
       Serial.println("MQTT client connected.");
       client.publish(willTopic.c_str(), STATUS_ONLINE, true);
+      client.publish(ipTopic.c_str(), ip.toString().c_str(), true);
     } else {
       Serial.print("failed, rc=");
       Serial.println(client.state());
