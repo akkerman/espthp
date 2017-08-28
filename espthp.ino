@@ -28,7 +28,7 @@ PubSubClient client(WiFiClient);
 Adafruit_BME280 bme; // I2C
 
 void setup() {
-  
+
   Serial.begin(115200);
   delay(10);
 
@@ -45,12 +45,12 @@ void setup() {
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASS);
-  
+
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
- 
+
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.print("IP address: ");
@@ -88,17 +88,17 @@ void loop() {
   }
 }
 
-void bmeReadSend() {  
+void bmeReadSend() {
   char temperature[6];
-  char humidity[6];  
+  char humidity[6];
   char pressure[7];
-  
-  float t = bme.readTemperature();  
+
+  float t = bme.readTemperature();
   float h = bme.readHumidity();
   float p = bme.readPressure()/100.0F;
-  
+
   dtostrf(t, 5, 1, temperature);
-  dtostrf(h, 5, 1, humidity);  
+  dtostrf(h, 5, 1, humidity);
   dtostrf(p, 5, 1, pressure);
 
   Serial.print("t,h,p: ");
@@ -112,7 +112,7 @@ void bmeReadSend() {
 
 void vccReadSend() {
     float v  = ESP.getVcc() / 1000.0;
-    char vcc[10]; 
+    char vcc[10];
     dtostrf(v, 5, 1, vcc);
     client.publish(vccTopic.c_str(), vcc);
 }
