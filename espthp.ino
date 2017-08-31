@@ -29,6 +29,7 @@ PubSubClient client(WiFiClient);
 Adafruit_BME280 bme; // I2C
 Ticker ticker;
 
+
 void setup() {
   Serial.begin(115200);
   delay(10);
@@ -59,8 +60,10 @@ void setup() {
   Serial.println(ip);
 
   client.setServer(MQTT_IP, MQTT_PORT);
+  client.setCallback(callback);
   ticker.attach(600.0, publish);
 }
+
 
 bool publishNow = false;
 void loop() {
@@ -71,6 +74,7 @@ void loop() {
       Serial.println("MQTT client connected.");
       client.publish(willTopic.c_str(), STATUS_ONLINE, true);
       client.publish(ipTopic.c_str(), ip.toString().c_str(), true);
+      client.subscribe("config/publish");
       publishNow = true;
     } else {
       Serial.print("failed, rc=");
@@ -131,3 +135,14 @@ void vccRead() {
   float v  = ESP.getVcc() / 1000.0;
   dtostrf(v, 5, 1, vcc);
 }
+
+void callback(char* topic, byte* payload, unsigned int length) {
+  std::string s( reinterpret_cast<char const*>(payload), length );
+  Serial.print("message arrived: ");
+  Serial.print(topic);
+  Serial.println();
+  if (s == "all" || s == chipId.c_str()) {
+    publish();
+  }
+}
+
