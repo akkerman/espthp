@@ -140,6 +140,8 @@ void callback(char* topic, byte* payload, unsigned int length) {
   std::string s( reinterpret_cast<char const*>(payload), length );
   Serial.print("message arrived: ");
   Serial.print(topic);
+  Serial.print(" - ");
+  Serial.print(s.c_str());
   Serial.println();
   if (s == "all" || s == chipId.c_str()) {
     publish();
